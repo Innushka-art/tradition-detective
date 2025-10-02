@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradition Detective Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            direction: ltr;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header p {
+            color: #555;
+            font-size: 1.3em;
+        }
+        
+        .instructions {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .instructions h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            color: #555;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+        
+        .difficulty-section {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+        
+        .difficulty-title {
+            text-align: center;
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .easy { border-left: 6px solid #27ae60; }
+        .medium { border-left: 6px solid #f39c12; }
+        .hard { border-left: 6px solid #e74c3c; }
+        .expert { border-left: 6px solid #9b59b6; }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .card-question {
+            font-size: 1.15em;
+            color: #2c3e50;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 20px;
+            flex-grow: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .card-answer {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .card-clue {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+        
+        .card.revealed .card-answer,
+        .card.revealed .card-clue {
+            display: block;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .reveal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.5);
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .controls, .reveal-btn {
+                display: none;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 2px solid #ddd;
+            }
+            .card-answer, .card-clue {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Tradition Detective 🔍</h1>
+        <p>Can you guess which culture each tradition comes from?</p>
+    </div>
+    
+    <div class="instructions">
+        <h3>📝 How to Play:</h3>
+        <p><strong>In class:</strong> Read the description and let students discuss and guess the culture</p>
+        <p><strong>Online:</strong> Share your screen and click "Reveal Answer" when ready</p>
+        <p><strong>Points:</strong> 3 points for correct guess without hint | 2 points with hint | 1 point after reveal</p>
+        <p><strong>Tip:</strong> Encourage students to explain WHY they think it's from that culture!</p>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" onclick="revealAll()">👁️ Reveal All Answers</button>
+        <button class="control-btn" onclick="hideAll()">🔒 Hide All Answers</button>
+        <button class="control-btn" onclick="window.print()">🖨️ Print Cards</button>
+    </div>
+
+    <!-- EASY SECTION -->
+    <div class="difficulty-section">
+        <div class="difficulty-title easy">
+            🟢 EASY Level
+        </div>
+        <div class="cards-container">
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">1</div>
+                <div class="card-icon">💅</div>
+                <div class="card-question">"People paint colorful patterns on their hands and feet for celebrations"</div>
+                <div class="card-answer">✅ Answer: Henna/Mehndi traditions (India, Middle East, North Africa)</div>
+                <div class="card-clue">💡 Hint: Often done before weddings</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">2</div>
+                <div class="card-icon">🧧</div>
+                <div class="card-question">"Families hang red lanterns and give money in red envelopes for good luck"</div>
+                <div class="card-answer">✅ Answer: Chinese New Year (China, East Asia)</div>
+                <div class="card-clue">💡 Hint: The color red represents prosperity</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">3</div>
+                <div class="card-icon">🍅</div>
+                <div class="card-question">"People throw tomatoes at each other in a huge food fight festival"</div>
+                <div class="card-answer">✅ Answer: La Tomatina (Spain)</div>
+                <div class="card-clue">💡 Hint: Happens every August in Buñol</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEDIUM SECTION -->
+    <div class="difficulty-section">
+        <div class="difficulty-title medium">
+            🟡 MEDIUM Level
+        </div>
+        <div class="cards-container">
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">4</div>
+                <div class="card-icon">🌊</div>
+                <div class="card-question">"Young people jump backwards over waves at midnight while wearing white"</div>
+                <div class="card-answer">✅ Answer: New Year's Eve (Brazil - Copacabana)</div>
+                <div class="card-clue">💡 Hint: Each jump represents a wish for the new year</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">5</div>
+                <div class="card-icon">🏠</div>
+                <div class="card-question">"Families build small houses and sleep outside under the stars for a week"</div>
+                <div class="card-answer">✅ Answer: Sukkot (Jewish tradition)</div>
+                <div class="card-clue">💡 Hint: Celebrates the harvest and remembers the desert journey</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">6</div>
+                <div class="card-icon">🎨</div>
+                <div class="card-question">"People throw colored powder at each other to celebrate spring"</div>
+                <div class="card-answer">✅ Answer: Holi (India, Nepal)</div>
+                <div class="card-clue">💡 Hint: Also called the Festival of Colors</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">7</div>
+                <div class="card-icon">🍞</div>
+                <div class="card-question">"The oldest family member hides a coin in a special bread, and whoever finds it gets good luck"</div>
+                <div class="card-answer">✅ Answer: Vasilopita (Greek New Year tradition)</div>
+                <div class="card-clue">💡 Hint: Named after Saint Basil</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HARD SECTION -->
+    <div class="difficulty-section">
+        <div class="difficulty-title hard">
+            🔴 HARD Level
+        </div>
+        <div class="cards-container">
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">8</div>
+                <div class="card-icon">🐂</div>
+                <div class="card-question">"Young men run in front of bulls through narrow streets every summer"</div>
+                <div class="card-answer">✅ Answer: Running of the Bulls - San Fermín (Spain - Pamplona)</div>
+                <div class="card-clue">💡 Hint: Very dangerous tradition that lasts 9 days</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">9</div>
+                <div class="card-icon">💀</div>
+                <div class="card-question">"People visit graves and have picnics with their ancestors, bringing their favorite foods"</div>
+                <div class="card-answer">✅ Answer: Day of the Dead / Día de los Muertos (Mexico)</div>
+                <div class="card-clue">💡 Hint: Not a sad occasion - it's a celebration!</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">10</div>
+                <div class="card-icon">🕎</div>
+                <div class="card-question">"Families light a series of oil lamps for 8 nights and play with a spinning top"</div>
+                <div class="card-answer">✅ Answer: Hanukkah (Jewish tradition)</div>
+                <div class="card-clue">💡 Hint: The spinning top is called a dreidel</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPERT SECTION -->
+    <div class="difficulty-section">
+        <div class="difficulty-title expert">
+            🟣 EXPERT Level (Bonus!)
+        </div>
+        <div class="cards-container">
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">11</div>
+                <div class="card-icon">🎋</div>
+                <div class="card-question">"People write wishes on paper and tie them to tree branches at shrines"</div>
+                <div class="card-answer">✅ Answer: Ema/Tanzaku tradition (Japan)</div>
+                <div class="card-clue">💡 Hint: Common at Shinto shrines and during Tanabata festival</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="card-number">12</div>
+                <div class="card-icon">🍇</div>
+                <div class="card-question">"Everyone eats 12 grapes at midnight, one for each clock chime"</div>
+                <div class="card-answer">✅ Answer: New Year's Eve (Spain, Latin America)</div>
+                <div class="card-clue">💡 Hint: Each grape represents good luck for a month of the year</div>
+                <button class="reveal-btn" onclick="event.stopPropagation(); toggleCard(this.parentElement)">Reveal Answer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(card) {
+            card.classList.toggle('revealed');
+        }
+
+        function revealAll() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.add('revealed');
+            });
+        }
+
+        function hideAll() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('revealed');
+            });
+        }
+    </script>
+</body>
+</html>
